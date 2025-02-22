@@ -1,18 +1,23 @@
 "use client"
 
-import { X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
 import { Badge } from "~/components/ui/badge"
 import Image from "next/image"
 import axios from 'axios';
+import { useRouter } from "next/navigation";
 
-export default function StartModal({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function StartModal({ children, onBaseCreated }: { children: React.ReactNode, onBaseCreated: () => void }) {
+	const router = useRouter();
 	const handleInsertBase = async () => { 
 		try {
 			const response = await axios.post('/api/bases', { name: 'Untitled Base' });
 			if (response.status !== 200) {
 				console.error('Failed to insert base');
 			}
+
+			const baseId = response.data.baseId;
+			onBaseCreated();
+			router.push(`/${baseId}`);
 		} catch (error) {
 			console.error('Failed to insert base', error);
 		}
@@ -23,14 +28,12 @@ export default function StartModal({ children }: Readonly<{ children: React.Reac
 			<DialogTrigger>
 				{children}
 			</DialogTrigger>
-
 			<DialogContent className="sm:max-w-[800px]">
 				<DialogHeader>
 					<div className="flex items-center justify-between">
 						<DialogTitle className="text-2xl font-semibold">How do you want to start?</DialogTitle>
 					</div>
 				</DialogHeader>
-
 				<div className="grid gap-4 md:grid-cols-2 pt-4">
 					<button className="group relative overflow-hidden rounded-lg border bg-background p-6 text-left transition-colors hover:bg-accent/50" onClick={handleInsertBase}>
 						<div className="mb-8">
@@ -54,7 +57,6 @@ export default function StartModal({ children }: Readonly<{ children: React.Reac
 							</p>
 						</div>
 					</button>
-
 					<button className="group relative overflow-hidden rounded-lg border bg-background p-6 text-left transition-colors hover:bg-accent/50" onClick={handleInsertBase}>
 						<div className="mb-8">
 							<Image
