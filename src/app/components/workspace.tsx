@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button"
 import StartModal from "./start-modal"
 import { Badge } from "~/components/ui/badge"
 import { Card } from "~/components/ui/card"
+import BaseCard from "./base-card"
 import { Base } from "@prisma/client"
 import { useState, useEffect } from "react"
 import axios from 'axios'
@@ -56,7 +57,11 @@ export default function Workspace() {
 				</div>
 			</div>
 			{bases.length ? (
-				<BaseTable bases={bases} />
+				<div className="grid grid-cols-3 gap-3">
+					{bases.map(base => (
+						<BaseCard key={base.id} base={base} />
+					))}
+				</div>
 			) : (
 				<div className="flex items-center justify-center">
 					<p className="text-muted-foreground">No bases yet. Create one to get started.</p>

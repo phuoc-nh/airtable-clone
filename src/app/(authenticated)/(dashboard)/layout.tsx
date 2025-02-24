@@ -18,8 +18,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+    // <html lang="en" className={`${GeistSans.variable}`}>
+      <main>
         
         <SidebarProvider>
           <AppSidebar />
@@ -47,7 +47,7 @@ export default function RootLayout({
             </main>
           </SidebarInset>
         </SidebarProvider>
-      </body>
-    </html>
+      </main>
+    // </html>
   );
 }
