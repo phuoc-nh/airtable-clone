@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
+interface CreateBaseRequestBody {
+	name: string;
+}
 export async function POST(req: Request) {
 	try {
 		const session = await auth();
@@ -11,7 +14,7 @@ export async function POST(req: Request) {
 			return NextResponse.redirect('/login');
 		}
 
-		const body = await req.json();
+		const body: CreateBaseRequestBody = await req.json();
 		const newBase = await db.base.create({
 			data: {
 				name: body.name,

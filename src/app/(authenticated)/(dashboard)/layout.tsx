@@ -1,12 +1,10 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
 import { AppSidebar } from "../../components/app-side-bar";
 import TopNavBar from "../../components/top-nav-bar";
-import { Separator } from "~/components/ui/separator";
 
 export const metadata: Metadata = {
   title: "Create T3 App",

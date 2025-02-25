@@ -5,12 +5,14 @@ import { Badge } from "~/components/ui/badge"
 import Image from "next/image"
 import axios from 'axios';
 import { useRouter } from "next/navigation";
-
+interface CreateBaseResponse {
+	baseId: string;
+}
 export default function StartModal({ children, onBaseCreated }: { children: React.ReactNode, onBaseCreated: () => void }) {
 	const router = useRouter();
-	const handleInsertBase = async () => { 
+	const handleInsertBase = async () => {
 		try {
-			const response = await axios.post('/api/bases', { name: 'Untitled Base' });
+			const response = await axios.post<CreateBaseResponse>('/api/bases', { name: 'Untitled Base' });
 			if (response.status !== 200) {
 				console.error('Failed to insert base');
 			}

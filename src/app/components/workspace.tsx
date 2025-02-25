@@ -4,9 +4,8 @@ import { MoreHorizontal, Star } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import StartModal from "./start-modal"
 import { Badge } from "~/components/ui/badge"
-import { Card } from "~/components/ui/card"
 import BaseCard from "./base-card"
-import { Base } from "@prisma/client"
+import { type Base } from "@prisma/client"
 import { useState, useEffect } from "react"
 import axios from 'axios'
 
@@ -16,14 +15,14 @@ export default function Workspace() {
 	const fetchBases = async () => {
 		try {
 			const response = await axios.get('/api/bases');
-			setBases(response.data);
+			setBases(response.data as Base[]);
 		} catch (error) {
 			console.error('Failed to fetch bases', error);
 		}
 	};
 
 	useEffect(() => {
-		fetchBases();
+		void fetchBases();
 	}, []);
 
 	return (
@@ -38,7 +37,7 @@ export default function Workspace() {
 							</Badge>
 							<Badge variant="outline" className="text-blue-400">
 								UPGRADE
-							</Badge>	
+							</Badge>
 						</div>
 						<button className="text-muted-foreground hover:text-foreground">
 							<Star className="h-5 w-5" />

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Plus, Type, ChevronRight, Hash } from "lucide-react"
+import { Type, ChevronRight, Hash } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -47,7 +47,7 @@ export function FieldPopover({children, onCreateField}: {children: React.ReactNo
             className="border-primary"
           />
           <Command className="rounded-lg border shadow-none">
-            <CommandInput placeholder="Find a field type" value={selectedFieldType || ""} />
+            <CommandInput placeholder="Find a field type" value={selectedFieldType ?? ""} />
             <CommandList className="max-h-[320px]">
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>

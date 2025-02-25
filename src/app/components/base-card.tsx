@@ -1,5 +1,5 @@
 'use client'
-import { Base } from '@prisma/client'
+import { type Base } from '@prisma/client'
 import React from 'react'
 import { Card } from '~/components/ui/card'
 import { formatDistanceToNow } from 'date-fns'

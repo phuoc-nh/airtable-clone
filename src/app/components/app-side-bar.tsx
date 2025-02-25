@@ -1,11 +1,10 @@
-import { Boxes, Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Boxes, Home } from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,

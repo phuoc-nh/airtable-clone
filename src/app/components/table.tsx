@@ -25,6 +25,7 @@ export default function TableDisplay() {
   const [data, setData] = useState(initialData);
 
   const addColumn = (fieldName: string, fieldType: string) => {
+    console.log('fieldType', fieldType);
     const newColumn = {
       accessorKey: `col_${columns.length + 1}`,
       header: fieldName || `Column ${columns.length + 1}`,
@@ -33,13 +34,13 @@ export default function TableDisplay() {
     setData(data.map(row => ({ ...row, [newColumn.accessorKey]: "" })));
   };
 
-  const addRow = () => {
-    const newRow = {};
-    // @ts-ignore
-    columns.forEach(col => newRow[col.accessorKey] = "");
-    // @ts-ignore
-    setData([...data, newRow]);
-  };
+  // const addRow = () => {
+  //   const newRow = {};
+  //   // @ts-ignore
+  //   columns.forEach(col => newRow[col.accessorKey] = "");
+  //   // @ts-ignore
+  //   setData([...data, newRow]);
+  // };
 
   const table = useReactTable({
     data,
@@ -75,7 +76,7 @@ export default function TableDisplay() {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id} className="hover:bg-gray-100 border-none">
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} style={{ width: cellWidth }} className="h-[30px] p-0 border border-gray-300 "> 
+                <TableCell key={cell.id} style={{ width: cellWidth }} className="h-[30px] p-0 border border-gray-300 ">
                   <div className="h-full px-4 flex items-center">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </div>

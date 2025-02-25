@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Plus, Type, ChevronRight, Hash } from "lucide-react"
+import { Type, ChevronRight, Hash } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
