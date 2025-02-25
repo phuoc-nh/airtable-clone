@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { Plus } from "lucide-react";
-import { FieldPopover } from "./add-filed-popover";
+import { FieldPopover } from "./add-field-popover";
 
 export default function TableDisplay() {
   const initialColumns = [
@@ -24,10 +24,10 @@ export default function TableDisplay() {
   const [columns, setColumns] = useState(initialColumns);
   const [data, setData] = useState(initialData);
 
-  const addColumn = () => {
+  const addColumn = (fieldName: string, fieldType: string) => {
     const newColumn = {
       accessorKey: `col_${columns.length + 1}`,
-      header: `Column ${columns.length + 1}`,
+      header: fieldName || `Column ${columns.length + 1}`,
     };
     setColumns([...columns, newColumn]);
     setData(data.map(row => ({ ...row, [newColumn.accessorKey]: "" })));
@@ -35,7 +35,9 @@ export default function TableDisplay() {
 
   const addRow = () => {
     const newRow = {};
+    // @ts-ignore
     columns.forEach(col => newRow[col.accessorKey] = "");
+    // @ts-ignore
     setData([...data, newRow]);
   };
 
@@ -60,11 +62,10 @@ export default function TableDisplay() {
                 </TableHead>
               ))}
               <TableHead style={{ width: cellWidth }} className="h-8 border border-gray-300">
-              {/* onClick={addColumn} */}
-                <FieldPopover>
-                <button  className="flex items-center justify-center w-full h-full">
-                  <Plus className="w-4 h-4 text-gray-400" />
-                </button>
+                <FieldPopover onCreateField={addColumn}>
+                  <button className="flex items-center justify-center w-full h-full">
+                    <Plus className="w-4 h-4 text-gray-400" />
+                  </button>
                 </FieldPopover>
               </TableHead>
             </TableRow>
@@ -74,18 +75,12 @@ export default function TableDisplay() {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id} className="hover:bg-gray-100 border-none">
               {row.getVisibleCells().map((cell) => (
-                // border border-gray-300
                 <TableCell key={cell.id} style={{ width: cellWidth }} className="h-[30px] p-0 border border-gray-300 "> 
                   <div className="h-full px-4 flex items-center">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </div>
                 </TableCell>
               ))}
-              {/* <TableCell style={{ width: cellWidth }} className="h-[40px] p-0 ">
-                <div className="h-full px-4 flex items-center justify-center">
-                  <Plus className="w-4 h-4 text-gray-400" />
-                </div>
-              </TableCell> */}
             </TableRow>
           ))}
           <TableRow className="hover:bg-transparent">

@@ -21,17 +21,22 @@ const fieldTypes = [
   
 ]
 
-export function FieldPopover({children}: {children: React.ReactNode}) {
+export function FieldPopover({children, onCreateField}: {children: React.ReactNode, onCreateField: (fieldName: string, fieldType: string) => void}) {
   const [open, setOpen] = React.useState(false)
   const [fieldName, setFieldName] = React.useState("")
+  const [selectedFieldType, setSelectedFieldType] = React.useState<string | null>(null)
+
+  const handleCreateField = () => {
+    if (selectedFieldType) {
+      onCreateField(fieldName, selectedFieldType);
+      setOpen(false);
+    }
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        {/* <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Plus className="h-4 w-4" />
-        </Button> */}
-			  {children}
+        {children}
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0" align="start">
         <div className="space-y-4 p-4">
@@ -42,7 +47,7 @@ export function FieldPopover({children}: {children: React.ReactNode}) {
             className="border-primary"
           />
           <Command className="rounded-lg border shadow-none">
-            <CommandInput placeholder="Find a field type" />
+            <CommandInput placeholder="Find a field type" value={selectedFieldType || ""} />
             <CommandList className="max-h-[320px]">
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
@@ -50,19 +55,13 @@ export function FieldPopover({children}: {children: React.ReactNode}) {
                   <CommandItem
                     key={type.id}
                     className="flex items-center justify-between"
-                    // onSelect={() => {
-                    //   console.log("Selected:", type.name)
-                    //   setOpen(false)
-                    // }}
+                    onSelect={() => setSelectedFieldType(type.id)}
                   >
                     <div className="flex items-center gap-2">
                       <type.icon className="h-4 w-4" />
                       <span>{type.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {/* {type.badge && (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600">{type.badge}</span>
-                      )} */}
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </CommandItem>
@@ -72,14 +71,10 @@ export function FieldPopover({children}: {children: React.ReactNode}) {
           </Command>
         </div>
         <div className="flex items-center justify-between border-t p-4">
-          {/* <Button variant="outline" size="sm" className="gap-2" onClick={() => setOpen(false)}>
-            <Plus className="h-4 w-4" />
-            Add description
-          </Button> */}
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
             Cancel
-				  </Button>
-				  <Button  size="sm" onClick={() => setOpen(false)}>
+          </Button>
+          <Button size="sm" onClick={handleCreateField}>
             Create field
           </Button>
         </div>
@@ -87,4 +82,3 @@ export function FieldPopover({children}: {children: React.ReactNode}) {
     </Popover>
   )
 }
-
