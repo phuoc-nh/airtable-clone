@@ -7,7 +7,13 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command"
 
-const fieldTypes = [
+interface FieldType {
+  id: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const fieldTypes: FieldType[] = [
   {
     id: "number",
     name: "Number",
@@ -18,10 +24,9 @@ const fieldTypes = [
     name: "Single line text",
     icon: Type,
   },
-  
 ]
 
-export function FieldPopover({children, onCreateField}: {children: React.ReactNode, onCreateField: (fieldName: string, fieldType: string) => void}) {
+export function FieldPopover({ children, onCreateField }: { children: React.ReactNode, onCreateField: (fieldName: string, fieldType: string) => void }) {
   const [open, setOpen] = React.useState(false)
   const [fieldName, setFieldName] = React.useState("")
   const [selectedFieldType, setSelectedFieldType] = React.useState<string | null>(null)
