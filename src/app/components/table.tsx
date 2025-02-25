@@ -48,7 +48,7 @@ export default function TableDisplay() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const cellWidth = 150; // Fixed width for each cell
+  const cellWidth = 170; // Fixed width for each cell
   const tableWidth = (columns.length + 1) * cellWidth; // Scale table width based on columns count
 
   return (
@@ -72,6 +72,7 @@ export default function TableDisplay() {
             </TableRow>
           ))}
         </TableHeader>
+
         <TableBody>
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id} className="hover:bg-gray-100 border-none">
@@ -84,14 +85,25 @@ export default function TableDisplay() {
               ))}
             </TableRow>
           ))}
-          <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={columns.length} className="h-[30px] p-0 border border-gray-300">
+
+          <TableRow className="hover:bg-gray-100">
+            <TableCell colSpan={1} className="h-[30px] p-0 border border-gray-300">
               <div className="h-full px-4 flex items-center">
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
             </TableCell>
+            <TableCell colSpan={columns.length - 1} className="h-[30px] p-0 border border-gray-300">
+            </TableCell>
           </TableRow>
+
+          {/* <TableRow className="hover:bg-gray-100">
+            <TableCell colSpan={1} rowSpan={10} className="h-[30px] p-0 border border-gray-300">
+            </TableCell>
+
+          </TableRow> */}
+
         </TableBody>
+        {/* <TableFooter></TableFooter> */}
       </Table>
     </div>
   );
