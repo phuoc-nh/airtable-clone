@@ -2,30 +2,48 @@ import { ChevronDown, Clock, HelpCircle, Plus, Share2 } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
+import TableTabs from '~/app/components/create-table-button'
 import TableDisplay from '~/app/components/table'
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import { db } from '~/server/db'
 
-export default async function page({ params }: { params: { baseId: string } }) {
-	const isActive = true;
-	// const baseId = awparams.baseId
-	// count tables based on Id to define the name of the new table
-	const count = await db.table.count({
+export default async function page({ params }: { params: { baseId: string, tableId: string } }) {
+	const tables = await db.table.findMany({
 		where: {
 			baseId: params.baseId
 		}
-	})
+	});
 
-	const firstTable = await db.table.findFirst({
-		where: {
-			baseId: params.baseId
-		}
-	})
+	const createNewTable = async () => {
+		'use server'
+		const count = await db.table.count({
+			where: {
+				baseId: params.baseId
+			}
+		});
 
-	if (count == 0 || !firstTable) {
-
+		// const newTable = await db.table.create({
+		// 	data: {
+		// 		name: `Table ${count + 1}`,
+		// 		baseId: params.baseId,
+		// 		columns: {
+		// 			create: [
+		// 				{ name: "Column 1", type: "text" },
+		// 				{ name: "Column 2", type: "number" },
+		// 				{ name: "Column 3", type: "text" }
+		// 			]
+		// 		},
+		// 		rows: {
+		// 			create: [
+		// 				{ cells
+		// 					: [] }
+		// 			]
+		// 		}
+		// 	},
+		// 	include: { columns: true, rows: { include: { cells: true } } }
+		// });
 		const newTable = await db.table.create({
 			data: {
 				name: `Table ${count + 1}`,
@@ -34,46 +52,21 @@ export default async function page({ params }: { params: { baseId: string } }) {
 					create: [
 						{ name: "Column 1", type: "text" },
 						{ name: "Column 2", type: "number" },
+						{ name: "Column 3", type: "text" }
 					]
 				},
-				rows: {
-					create: [
-						{},
-						{}
-					]
-				}
 			},
-			include: { columns: true, rows: true, }
+			include: { columns: true }
 		});
 
-		console.log('newTable', newTable)
 
-		const cellPromises: unknown[] = []
-		newTable.columns.forEach((column) => {
-			newTable.rows.forEach((row) => {
-				cellPromises.push(db.cell.create({
-					data: {
-						value: '',
-						columnId: column.id,
-						rowId: row.id
-					}
-				}))
-			})
-		})
-
-		await Promise.all(cellPromises)
-
-
-		redirect(`/${params.baseId}/${newTable.id}`)
-	}
-
-	// redirect to the first table
-	redirect(`/${params.baseId}/${firstTable.id}`)
+		redirect(`/${params.baseId}/${newTable.id}`);
+	};
 
 
 	return (
 		<div className='flex flex-col h-full'>
-			{/* <div className="flex flex-col">
+			<div className="flex flex-col">
 				<header className="bg-[#C84A21] text-white">
 					<div className="flex items-center h-14 px-4 gap-8">
 						<div className="flex items-center gap-2">
@@ -117,34 +110,13 @@ export default async function page({ params }: { params: { baseId: string } }) {
 						</div>
 					</div>
 				</header>
-				<div className="flex items-center h-10 px-4  border-b bg-[#C03D05]">
-					<div className={
-						cn(
-							"text-sm h-10 gap-2 text-white flex justify-between items-center p-3",
-							{ "bg-white text-black rounded-t-sm": isActive })
-					} >
-						Table 1
-						<ChevronDown className="w-4 h-4 opacity-60" />
-					</div>
-					<div className="text-sm h-10 gap-2 text-white flex justify-between items-center hover:bg-white hover:text-black hover:rounded-t-sm p-3" >
-						Table 2
-						<ChevronDown className="w-4 h-4 opacity-60" />
-					</div>
-					<Button size="icon" variant="ghost" className="h-8 w-8 text-white">
-						<Plus className="w-4 h-4" />
-					</Button>
-					<div className="ml-auto flex items-center gap-2">
-						<Button variant="ghost" className="h-8 text-white">
-							Extensions
-						</Button>
-						<Button variant="ghost" className="h-8">
-							Tools
-						</Button>
-					</div>
-				</div>
+				<TableTabs createNewTable={createNewTable} tables={tables} curTable={params.tableId} baseId={params.baseId} />
 			</div>
-			<TableDisplay></TableDisplay> */}
+			<TableDisplay></TableDisplay>
 		</div>
 
 	)
 }
+
+
+

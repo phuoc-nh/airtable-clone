@@ -11,7 +11,8 @@ export default function TableDisplay() {
   const initialColumns: ColumnDef<Data>[] = [
     {
       accessorKey: "col_1",
-      cell: ({ getValue }) => <Input type="text" className="w-full h-full focus:border-[#176EE1] pl-3 rounded-none border-none focus:border-solid focus:border-[2px]" value={getValue() as string} />,
+      // header: "Column 1",
+      cell: ({ getValue }) => <Input type="text" className="w-full h-full focus:border-[#176EE1] pl-3 rounded-none border-w focus:border-solid focus:border-[2px]" value={getValue() as string} />,
       header: () => (
         <div className="flex items-center gap-2">
           <Type className="w-3" /> Column 1
@@ -54,11 +55,11 @@ export default function TableDisplay() {
     { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
     { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
     { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
-    // { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
-    // { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
-    // { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
-    // { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
-    // { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
+    { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
+    { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
+    { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
+    { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
+    { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
     { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
     { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
     { col_1: "Row 1 Col 1", col_2: "Row 1 Col 2", col_3: "abc", col_4: "def" },
@@ -157,7 +158,6 @@ export default function TableDisplay() {
               ))}
             </TableRow>
           ))}
-
           <TableRow className="hover:bg-gray-100 border-none">
             <TableCell colSpan={1} className="h-[30px] p-0 border border-gray-300 bg-white">
               <div className="h-full px-4 flex items-center">
