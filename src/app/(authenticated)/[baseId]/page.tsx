@@ -9,7 +9,6 @@ import { cn } from '~/lib/utils'
 export default function page() {
 
 	const isActive = true;
-
 	return (
 		<div className='flex flex-col h-full'>
 			<div className="flex flex-col">
