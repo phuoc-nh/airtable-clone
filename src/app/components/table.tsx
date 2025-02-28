@@ -5,10 +5,15 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { ChevronDown, Hash, Plus, Type } from "lucide-react";
 import { FieldPopover } from "./add-field-popover";
 import { Input } from "~/components/ui/input";
+import { type Data } from "./table-container";
 
-type Data = Record<string, { id: string, value: string | number }>;
+type TableProps = {
+  initialColumns: ColumnDef<Data>[],
+  initialData: Data[]
+  addColumn: (fieldName: string, fieldType: string) => void
+}
 
-export default function TableDisplay({ initialColumns, initialData }: { initialColumns: ColumnDef<Data>[], initialData: Data[] }) {
+export default function TableDisplay({ initialColumns, initialData, addColumn }: TableProps) {
 
   // const addColumn = (fieldName: string, fieldType: string) => {
   //   const newColumn: ColumnDef<Data> = {
@@ -77,8 +82,8 @@ export default function TableDisplay({ initialColumns, initialData }: { initialC
                 </TableHead>
               ))}
               <TableHead style={{ width: cellWidth }} className="h-8 border border-gray-300">
-                {/* <FieldPopover onCreateField={addColumn}> */}
-                <FieldPopover onCreateField={() => { console.log('Create Field') }}>
+                <FieldPopover onCreateField={addColumn}>
+                  {/* <FieldPopover onCreateField={() => { console.log('Create Field') }}> */}
                   <button className="flex items-center justify-center w-full h-full">
                     <Plus className="w-4 h-4 text-gray-400" />
                   </button>

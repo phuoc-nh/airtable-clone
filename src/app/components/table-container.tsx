@@ -5,24 +5,25 @@ import React, { useEffect, useState } from 'react'
 import TableDisplay from './table';
 import { Input } from '~/components/ui/input';
 import { Hash, Type } from 'lucide-react';
+import debounce from 'lodash.debounce';
 
 interface Cell {
-	id: string;
-	rowId: string;
-	columnId: string;
+	id: number;
+	rowId: number;
+	columnId: number;
 	value: string;
 	createdAt: string;
 }
 
 interface Row {
-	id: string;
+	id: number;
 	tableId: string;
 	createdAt: string;
 	cells: Cell[];
 }
 
 interface Column {
-	id: string;
+	id: number;
 	name: string;
 	type: string;
 	tableId: string;
@@ -38,51 +39,81 @@ interface Table {
 	rows: Row[];
 }
 
-type Data = Record<string, { id: string, value: string | number }>;
+export type Data = Record<string, { id: number, value: string | number, rowId: number, columnId: number }>;
+// export type Data = Record<string, { id: number, value: string | number, rowId: number, columnId: number }>;
 
 export default function TableContainer({ tableId }: { tableId: string }) {
 	const [data, setData] = useState<Data[]>([]);
 	const [columns, setColumns] = useState<ColumnDef<Data>[]>([]);
 
-	const handleCellChange = (cellId: string, columnId: string, value: string | number) => {
+	const handleCellChange = (cellId: number, columnId: number, value: string | number) => {
 		setData((prevData) => {
 			const newData = prevData.map((row) => {
-				if (row[columnId].id === cellId) {
+				if (row[columnId]?.id === cellId) {
 					return { ...row, [columnId]: { id: cellId, value: value } };
 				}
 				return row;
 			});
 			return newData;
 		});
+
+		void debouncedUpdateCell(cellId, value);
 	};
 
-	// const addColumn = (fieldName: string, fieldType: string) => {
-	//   const newColumn: ColumnDef<Data> = {
-	//     accessorKey: `col_${columns.length + 1}`,
-	//     header: () => fieldType === 'number' ?
-	//       <div className="flex items-center gap-2">
-	//         <Hash className="w-3" /> {fieldName}
-	//       </div> :
-	//       <div className="flex items-center gap-2">
-	//         <Type className="w-3" /> {fieldName}
-	//       </div>,
-	//     cell: ({ getValue, row }) => {
-	//       const cellData = getValue() as { id: string, value: string | number };
-	//       return (
-	//         <Input
-	//           type={fieldType === 'number' ? 'number' : 'text'}
-	//           className="w-full h-full focus:border-[#176EE1] pl-3 rounded-none border-none focus:border-solid focus:border-[2px]"
-	//           value={cellData.value as string}
-	//           data-cell-id={cellData.id}
-	//           onChange={(e) => handleCellChange(row.index, `col_${columns.length + 1}`, e.target.value)}
-	//         />
-	//       );
-	//     }
-	//   };
-	//   setColumns([...columns, newColumn]);
-	//   setData(data.map(row => ({ ...row, [newColumn.accessorKey as string]: { id: `cell_${row.id}_${columns.length + 1}`, value: fieldType === 'number' ? 0 : "" } })));
-	// };
+	const debouncedUpdateCell = debounce(async (cellId: number, value: string | number) => {
+		try {
+			await axios.put('/api/cells', { cellId, value });
+		} catch (error) {
+			console.error('Failed to update cell', error);
+		}
+	}, 300);
 
+	const addColumn = async (fieldName: string, fieldType: string) => {
+		try {
+			const response = await axios.post<{ column: Column, cells: Cell[] }>('/api/columns', { tableId, name: fieldName, type: fieldType });
+			const payload = response.data;
+			console.log('Payload', payload);
+
+			const newColumn = payload.column;
+			const newCells = payload.cells;
+
+			const newColumnDef: ColumnDef<Data> = {
+				accessorKey: newColumn.id.toString(),
+				header: () => (
+					<div className="flex items-center gap-2">
+						{newColumn.type === 'number' ? <Hash className="w-3" /> : <Type className="w-3" />} {newColumn.name}
+					</div>
+				),
+				cell: ({ getValue, column: col }) => {
+					const cellData = getValue() as { id: number, value: string | number };
+					return (
+						<Input
+							type='text'
+							className="w-full h-full focus:border-[#176EE1] pl-3 rounded-none border-none focus:border-solid focus:border-[2px]"
+							value={cellData.value as string}
+							data-cell-id={cellData.id}
+							onChange={(e) => handleCellChange(cellData.id, newColumn.id, e.target.value)}
+						/>
+					);
+				}
+			};
+
+			setColumns(prev => [...prev, newColumnDef]);
+
+			setData(prev => {
+				const newData = prev.map(row => {
+					const rowId = Object.keys(row)[0]; // Dynamically get the first key
+					// @ts-ignore
+					const cell = newCells.find(cell => cell.rowId === row[rowId]?.rowId);
+					return { ...row, [newColumn.id]: { id: cell?.id, value: cell?.value, rowId: cell?.rowId, columnId: cell?.columnId } };
+				});
+				return newData;
+			});
+
+		} catch (error) {
+			console.error('Failed to add column', error);
+		}
+	};
 
 
 	const fetchTable = async () => {
@@ -96,29 +127,21 @@ export default function TableContainer({ tableId }: { tableId: string }) {
 			const table = response.data;
 
 			const columnDefs: ColumnDef<Data>[] = table.columns.map((column) => ({
-				accessorKey: column.id,
+				accessorKey: column.id.toString(),
 				header: () => (
 					<div className="flex items-center gap-2">
 						{column.type === 'number' ? <Hash className="w-3" /> : <Type className="w-3" />} {column.name}
 					</div>
 				),
 				cell: ({ getValue, column: col }) => {
-					const cellData = getValue() as { id: string, value: string | number };
+					const cellData = getValue() as { id: number, value: string | number };
 					return (
 						<Input
 							type='text'
-							// type={column.type === 'number' ? 'number' : 'text'}
 							className="w-full h-full focus:border-[#176EE1] pl-3 rounded-none border-none focus:border-solid focus:border-[2px]"
 							value={cellData.value as string}
 							data-cell-id={cellData.id}
-							onChange={(e) => {
-								console.log('e.target.value', e.target.value);
-
-								console.log('col', column.id);
-								console.log('cellData.id', cellData.id)
-								handleCellChange(cellData.id, column.id, e.target.value);
-
-							}}
+							onChange={(e) => handleCellChange(cellData.id, column.id, e.target.value)}
 						/>
 					);
 				}
@@ -127,11 +150,13 @@ export default function TableContainer({ tableId }: { tableId: string }) {
 			const rowData: Data[] = table.rows.map((row) => {
 				const rowData: Data = {};
 				row.cells.forEach((cell) => {
-					rowData[cell.columnId] = { id: cell.id, value: cell.value };
+					rowData[cell.columnId] = { id: cell.id, value: cell.value, rowId: row.id, columnId: cell.columnId };
 				});
 				return rowData;
 			});
 
+			console.log('RowData', rowData);
+			console.log('ColumnDefs', columnDefs);
 
 			setColumns(columnDefs);
 			setData(rowData);
@@ -150,6 +175,6 @@ export default function TableContainer({ tableId }: { tableId: string }) {
 	}
 
 	return (
-		<TableDisplay initialColumns={columns} initialData={data} />
+		<TableDisplay initialColumns={columns} initialData={data} addColumn={addColumn} />
 	)
 }
