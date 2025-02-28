@@ -40,7 +40,6 @@ interface Table {
 }
 
 export type Data = Record<string, { id: number, value: string | number, rowId: number, columnId: number }>;
-// export type Data = Record<string, { id: number, value: string | number, rowId: number, columnId: number }>;
 
 export default function TableContainer({ tableId }: { tableId: string }) {
 	const [data, setData] = useState<Data[]>([]);
@@ -115,6 +114,22 @@ export default function TableContainer({ tableId }: { tableId: string }) {
 		}
 	};
 
+	const addRow = async () => {
+		try {
+			const response = await axios.post<{ row: Row, cells: Cell[] }>('/api/rows', { tableId });
+			const { row, cells } = response.data;
+
+			const newRow: Data = {};
+			cells.forEach((cell) => {
+				newRow[cell.columnId] = { id: cell.id, value: cell.value, rowId: row.id, columnId: cell.columnId };
+			});
+
+			setData(prev => [...prev, newRow]);
+
+		} catch (error) {
+			console.error('Failed to add row', error);
+		}
+	};
 
 	const fetchTable = async () => {
 		try {
@@ -175,6 +190,6 @@ export default function TableContainer({ tableId }: { tableId: string }) {
 	}
 
 	return (
-		<TableDisplay initialColumns={columns} initialData={data} addColumn={addColumn} />
+		<TableDisplay initialColumns={columns} initialData={data} addColumn={addColumn} addRow={addRow} />
 	)
 }

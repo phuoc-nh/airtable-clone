@@ -9,39 +9,12 @@ import { type Data } from "./table-container";
 
 type TableProps = {
   initialColumns: ColumnDef<Data>[],
-  initialData: Data[]
-  addColumn: (fieldName: string, fieldType: string) => void
+  initialData: Data[],
+  addColumn: (fieldName: string, fieldType: string) => void,
+  addRow: () => void
 }
 
-export default function TableDisplay({ initialColumns, initialData, addColumn }: TableProps) {
-
-  // const addColumn = (fieldName: string, fieldType: string) => {
-  //   const newColumn: ColumnDef<Data> = {
-  //     accessorKey: `col_${columns.length + 1}`,
-  //     header: () => fieldType === 'number' ?
-  //       <div className="flex items-center gap-2">
-  //         <Hash className="w-3" /> {fieldName}
-  //       </div> :
-  //       <div className="flex items-center gap-2">
-  //         <Type className="w-3" /> {fieldName}
-  //       </div>,
-  //     cell: ({ getValue, row }) => {
-  //       const cellData = getValue() as { id: string, value: string | number };
-  //       return (
-  //         <Input
-  //           type={fieldType === 'number' ? 'number' : 'text'}
-  //           className="w-full h-full focus:border-[#176EE1] pl-3 rounded-none border-none focus:border-solid focus:border-[2px]"
-  //           value={cellData.value as string}
-  //           data-cell-id={cellData.id}
-  //           onChange={(e) => handleCellChange(row.index, `col_${columns.length + 1}`, e.target.value)}
-  //         />
-  //       );
-  //     }
-  //   };
-  //   setColumns([...columns, newColumn]);
-  //   setData(data.map(row => ({ ...row, [newColumn.accessorKey as string]: { id: `cell_${row.id}_${columns.length + 1}`, value: fieldType === 'number' ? 0 : "" } })));
-  // };
-
+export default function TableDisplay({ initialColumns, initialData, addColumn, addRow }: TableProps) {
   const table = useReactTable({
     data: initialData,
     columns: initialColumns,
@@ -83,7 +56,6 @@ export default function TableDisplay({ initialColumns, initialData, addColumn }:
               ))}
               <TableHead style={{ width: cellWidth }} className="h-8 border border-gray-300">
                 <FieldPopover onCreateField={addColumn}>
-                  {/* <FieldPopover onCreateField={() => { console.log('Create Field') }}> */}
                   <button className="flex items-center justify-center w-full h-full">
                     <Plus className="w-4 h-4 text-gray-400" />
                   </button>
@@ -107,7 +79,7 @@ export default function TableDisplay({ initialColumns, initialData, addColumn }:
           ))}
           <TableRow className="hover:bg-gray-100 border-none">
             <TableCell colSpan={1} className="h-[30px] p-0 border border-gray-300 bg-white">
-              <div className="h-full px-4 flex items-center">
+              <div className="h-full px-4 flex items-center cursor-pointer" onClick={addRow}>
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
             </TableCell>
