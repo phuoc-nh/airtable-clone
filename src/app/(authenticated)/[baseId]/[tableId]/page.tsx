@@ -1,4 +1,4 @@
-import { ChevronDown, Clock, HelpCircle, Plus, Share2 } from 'lucide-react'
+import { BarChart2, ChevronDown, Clock, Eye, Filter, Grid, GroupIcon, HelpCircle, List, Palette, Plus, Share2, SortAsc, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -11,6 +11,7 @@ import { cn } from '~/lib/utils'
 import { db } from '~/server/db'
 import { faker } from '@faker-js/faker';
 import { type Cell } from '@prisma/client'
+import { Separator } from '~/components/ui/separator'
 export default async function page({ params }: { params: Promise<{ baseId: string, tableId: string }> }) {
 	const { baseId, tableId } = await params;
 	const tables = await db.table.findMany({
@@ -128,6 +129,29 @@ export default async function page({ params }: { params: Promise<{ baseId: strin
 					</div>
 				</header>
 				<TableTabs createNewTable={createNewTable} tables={tables} curTable={tableId} baseId={baseId} />
+			</div>
+			<div className="flex items-center h-10 px-2 border-b gap-2">
+				<div className="flex items-center">
+					<Button variant="ghost" size="sm" className="gap-2">
+						<BarChart2 className="w-4 h-4" />
+						Views
+					</Button>
+					<Separator orientation="vertical" className="mx-2 h-5" />
+					<div className="flex items-center gap-1">
+						<Button variant="ghost" size="sm" className="gap-2">
+							<Filter className="w-4 h-4" />
+							Filter
+						</Button>
+						<Button variant="ghost" size="sm" className="gap-2">
+							<SortAsc className="w-4 h-4" />
+							Sort
+						</Button>
+						<Button variant="ghost" size="sm" className="gap-2">
+							<Eye className="w-4 h-4" />
+							Find
+						</Button>
+					</div>
+				</div>
 			</div>
 			<TableContainer
 				tableId={tableId}

@@ -30,7 +30,7 @@ export default function TableTabs({ createNewTable, tables, curTable, baseId }: 
 				<Button variant="ghost" className="h-8 text-white">
 					Extensions
 				</Button>
-				<Button variant="ghost" className="h-8">
+				<Button variant="ghost" className="h-8 text-white">
 					Tools
 				</Button>
 			</div>
