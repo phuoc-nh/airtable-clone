@@ -9,7 +9,6 @@ interface CreateBaseRequestBody {
 export async function POST(req: Request) {
 	try {
 		const session = await auth();
-		console.log('session', session);
 		if (!session) {
 			return NextResponse.redirect('/login');
 		}

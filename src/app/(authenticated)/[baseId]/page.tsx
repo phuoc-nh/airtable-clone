@@ -9,9 +9,6 @@ import { cn } from '~/lib/utils'
 import { db } from '~/server/db'
 
 export default async function page({ params }: { params: { baseId: string } }) {
-	const isActive = true;
-	// const baseId = awparams.baseId
-	// count tables based on Id to define the name of the new table
 	const count = await db.table.count({
 		where: {
 			baseId: params.baseId
@@ -46,7 +43,6 @@ export default async function page({ params }: { params: { baseId: string } }) {
 			include: { columns: true, rows: true, }
 		});
 
-		console.log('newTable', newTable)
 
 		const cellPromises: unknown[] = []
 		newTable.columns.forEach((column) => {

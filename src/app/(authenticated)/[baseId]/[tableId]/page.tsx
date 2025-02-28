@@ -4,15 +4,17 @@ import { redirect } from 'next/navigation'
 import React from 'react'
 import TableTabs from '~/app/components/create-table-button'
 import TableDisplay from '~/app/components/table'
+import TableContainer from '~/app/components/table-container'
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import { db } from '~/server/db'
 
-export default async function page({ params }: { params: { baseId: string, tableId: string } }) {
+export default async function page({ params }: { params: Promise<{ baseId: string, tableId: string }> }) {
+	const { baseId, tableId } = await params;
 	const tables = await db.table.findMany({
 		where: {
-			baseId: params.baseId
+			baseId: baseId
 		}
 	});
 
@@ -20,49 +22,75 @@ export default async function page({ params }: { params: { baseId: string, table
 		'use server'
 		const count = await db.table.count({
 			where: {
-				baseId: params.baseId
+				baseId: baseId
 			}
 		});
 
-		// const newTable = await db.table.create({
-		// 	data: {
-		// 		name: `Table ${count + 1}`,
-		// 		baseId: params.baseId,
-		// 		columns: {
-		// 			create: [
-		// 				{ name: "Column 1", type: "text" },
-		// 				{ name: "Column 2", type: "number" },
-		// 				{ name: "Column 3", type: "text" }
-		// 			]
-		// 		},
-		// 		rows: {
-		// 			create: [
-		// 				{ cells
-		// 					: [] }
-		// 			]
-		// 		}
-		// 	},
-		// 	include: { columns: true, rows: { include: { cells: true } } }
-		// });
 		const newTable = await db.table.create({
 			data: {
 				name: `Table ${count + 1}`,
-				baseId: params.baseId,
+				baseId: baseId,
 				columns: {
 					create: [
 						{ name: "Column 1", type: "text" },
 						{ name: "Column 2", type: "number" },
-						{ name: "Column 3", type: "text" }
 					]
 				},
+				rows: {
+					create: [
+						{},
+						{}
+					]
+				}
 			},
-			include: { columns: true }
+			include: { columns: true, rows: true, }
 		});
 
+		const cellPromises: unknown[] = []
+		newTable.columns.forEach((column) => {
+			newTable.rows.forEach((row) => {
+				cellPromises.push(db.cell.create({
+					data: {
+						value: '',
+						columnId: column.id,
+						rowId: row.id
+					}
+				}))
+			})
+		})
 
-		redirect(`/${params.baseId}/${newTable.id}`);
+		await Promise.all(cellPromises)
+
+
+		redirect(`/${baseId}/${newTable.id}`)
 	};
 
+	const table = await db.table.findFirst({
+		where: {
+			id: tableId
+		}
+	});
+
+	if (!table) {
+		redirect(`/${baseId}`)
+	}
+
+	const getTable = async (tableId: string) => {
+		'use server'
+		const table = await db.table.findUnique({
+			where: { id: tableId },
+			include: {
+				columns: true,
+				rows: {
+					include: {
+						cells: true,
+					},
+				},
+			},
+		});
+
+		return table
+	}
 
 	return (
 		<div className='flex flex-col h-full'>
@@ -110,9 +138,11 @@ export default async function page({ params }: { params: { baseId: string, table
 						</div>
 					</div>
 				</header>
-				<TableTabs createNewTable={createNewTable} tables={tables} curTable={params.tableId} baseId={params.baseId} />
+				<TableTabs createNewTable={createNewTable} tables={tables} curTable={tableId} baseId={baseId} />
 			</div>
-			<TableDisplay></TableDisplay>
+			<TableContainer
+				tableId={tableId}
+			></TableContainer>
 		</div>
 
 	)
