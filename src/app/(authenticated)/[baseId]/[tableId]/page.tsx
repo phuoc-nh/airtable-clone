@@ -9,7 +9,8 @@ import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import { db } from '~/server/db'
-
+import { faker } from '@faker-js/faker';
+import { type Cell } from '@prisma/client'
 export default async function page({ params }: { params: Promise<{ baseId: string, tableId: string }> }) {
 	const { baseId, tableId } = await params;
 	const tables = await db.table.findMany({
@@ -26,41 +27,46 @@ export default async function page({ params }: { params: Promise<{ baseId: strin
 			}
 		});
 
+		// Generate random columns
+		const columns = Array.from({ length: 4 }, (_, i) => ({
+			name: faker.commerce.productName(),
+			type: faker.helpers.arrayElement(['text', 'number']),
+		}));
+
+		// Generate random rows
+		const rows = Array.from({ length: 6 }, () => ({}));
+
 		const newTable = await db.table.create({
 			data: {
 				name: `Table ${count + 1}`,
 				baseId: baseId,
 				columns: {
-					create: [
-						{ name: "Column 1", type: "text" },
-						{ name: "Column 2", type: "number" },
-					]
+					create: columns,
 				},
 				rows: {
-					create: [
-						{},
-						{}
-					]
+					create: rows,
 				}
 			},
 			include: { columns: true, rows: true, }
 		});
 
-		const cellPromises: unknown[] = []
+		const cells: Cell[] = []
+		console.log('newTable', newTable)
 		newTable.columns.forEach((column) => {
 			newTable.rows.forEach((row) => {
-				cellPromises.push(db.cell.create({
-					data: {
-						value: '',
-						columnId: column.id,
-						rowId: row.id
-					}
-				}))
+				// @ts-ignore
+				cells.push({
+					value: column.type === 'number' ? faker.number.int({ min: 1, max: 99 }).toString() : faker.lorem.word(),
+					columnId: column.id,
+					rowId: row.id,
+				})
 			})
 		})
 
-		await Promise.all(cellPromises)
 
+		await db.cell.createMany({
+			data: cells
+		})
 
 		redirect(`/${baseId}/${newTable.id}`)
 	};
@@ -73,23 +79,6 @@ export default async function page({ params }: { params: Promise<{ baseId: strin
 
 	if (!table) {
 		redirect(`/${baseId}`)
-	}
-
-	const getTable = async (tableId: string) => {
-		'use server'
-		const table = await db.table.findUnique({
-			where: { id: tableId },
-			include: {
-				columns: true,
-				rows: {
-					include: {
-						cells: true,
-					},
-				},
-			},
-		});
-
-		return table
 	}
 
 	return (
