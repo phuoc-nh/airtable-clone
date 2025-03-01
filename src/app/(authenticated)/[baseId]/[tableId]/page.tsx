@@ -1,4 +1,4 @@
-import { BarChart2, ChevronDown, Clock, Eye, Filter, Grid, GroupIcon, HelpCircle, List, Palette, Plus, Share2, SortAsc, Wrench } from 'lucide-react'
+import { AlignJustify, Badge, BarChart2, Calendar, ChevronDown, Clock, Eye, Filter, Grid, GroupIcon, HelpCircle, KanbanSquare, LayoutGrid, List, Palette, Plus, Search, Share2, SortAsc, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -12,6 +12,8 @@ import { db } from '~/server/db'
 import { faker } from '@faker-js/faker';
 import { type Cell } from '@prisma/client'
 import { Separator } from '~/components/ui/separator'
+import { Input } from '~/components/ui/input'
+import TableView from '~/app/components/table-view'
 export default async function page({ params }: { params: Promise<{ baseId: string, tableId: string }> }) {
 	const { baseId, tableId } = await params;
 	const tables = await db.table.findMany({
@@ -52,7 +54,7 @@ export default async function page({ params }: { params: Promise<{ baseId: strin
 		});
 
 		const cells: Cell[] = []
-		console.log('newTable', newTable)
+		// console.log('newTable', newTable)
 		newTable.columns.forEach((column) => {
 			newTable.rows.forEach((row) => {
 				// @ts-ignore
@@ -130,10 +132,10 @@ export default async function page({ params }: { params: Promise<{ baseId: strin
 				</header>
 				<TableTabs createNewTable={createNewTable} tables={tables} curTable={tableId} baseId={baseId} />
 			</div>
-			<div className="flex items-center h-10 px-2 border-b gap-2">
+			{/* <div className="flex items-center h-10 px-2 border-b gap-2">
 				<div className="flex items-center">
 					<Button variant="ghost" size="sm" className="gap-2">
-						<BarChart2 className="w-4 h-4" />
+						<AlignJustify className="w-4 h-4" />
 						Views
 					</Button>
 					<Separator orientation="vertical" className="mx-2 h-5" />
@@ -147,15 +149,15 @@ export default async function page({ params }: { params: Promise<{ baseId: strin
 							Sort
 						</Button>
 						<Button variant="ghost" size="sm" className="gap-2">
-							<Eye className="w-4 h-4" />
+							<Search className="w-4 h-4" />
 							Find
 						</Button>
 					</div>
 				</div>
-			</div>
-			<TableContainer
+			</div> */}
+			<TableView
 				tableId={tableId}
-			></TableContainer>
+			></TableView>
 		</div>
 
 	)

@@ -42,7 +42,7 @@ export default function TableDisplay({ initialColumns, initialData, addColumn, a
 
   return (
     <div className="overflow-x-auto bg-[#F7F7F7] flex flex-grow h-full" ref={divRef}>
-      <Table className="border-collapse border border-gray-300 border-r-0 border-b-0 text-xs " style={{ width: tableWidth }}>
+      <Table className="border-collapse border border-gray-300 border-r-0 border-b-0 text-xs h-full" style={{ width: tableWidth }}>
         <TableHeader className="sticky top-0 bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent bg-gray-100 bg-red">
