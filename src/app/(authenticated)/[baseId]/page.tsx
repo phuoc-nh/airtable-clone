@@ -1,27 +1,22 @@
-import { ChevronDown, Clock, HelpCircle, Plus, Share2 } from 'lucide-react'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
-import TableDisplay from '~/app/components/table'
-import { Avatar, AvatarFallback } from '~/components/ui/avatar'
-import { Button } from '~/components/ui/button'
-import { cn } from '~/lib/utils'
 import { db } from '~/server/db'
 
 import { faker } from '@faker-js/faker';
 import { type Cell } from '@prisma/client'
+type Params = Promise<{ baseId: string }>
 
-
-export default async function page({ params }: { params: { baseId: string } }) {
+export default async function page({ params }: { params: Params }) {
+	const { baseId } = await params;
 	const count = await db.table.count({
 		where: {
-			baseId: params.baseId
+			baseId: baseId
 		}
 	})
 
 	const firstTable = await db.table.findFirst({
 		where: {
-			baseId: params.baseId
+			baseId: baseId
 		}
 	})
 
@@ -38,7 +33,7 @@ export default async function page({ params }: { params: { baseId: string } }) {
 		const newTable = await db.table.create({
 			data: {
 				name: `Table ${count + 1}`,
-				baseId: params.baseId,
+				baseId: baseId,
 				columns: {
 					create: columns,
 				},
@@ -67,12 +62,12 @@ export default async function page({ params }: { params: { baseId: string } }) {
 			data: cells
 		})
 
-		redirect(`/${params.baseId}/${newTable.id}`)
+		redirect(`/${baseId}/${newTable.id}`)
 	}
 
 
 	// redirect to the first table
-	redirect(`/${params.baseId}/${firstTable.id}`)
+	redirect(`/${baseId}/${firstTable.id}`)
 
 
 	return (

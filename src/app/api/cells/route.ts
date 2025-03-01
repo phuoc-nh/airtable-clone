@@ -12,7 +12,7 @@ export async function PUT(req: Request) {
     const { cellId, value } = body;
 
     const updatedCell = await db.cell.update({
-      where: { id: cellId },
+      where: { id: parseInt(cellId) },
       data: { value: value.toString() },
     });
 
